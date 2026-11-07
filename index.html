@@ -1,0 +1,371 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#2a0f1c"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Cartas a Dois</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Outfit:wght@400;500;600&display=swap">
+<style>
+/* Layout: mesa de veludo vinho, baralho no centro, filtros recolhíveis embaixo */
+:root{
+  --mesa:#2a0f1c; --mesa2:#3d1529; --carta:#fbf5ee; --tinta:#2b1720;
+  --ouro:#e0b45c; --suave:#c9a7b5; --linha:rgba(224,180,92,.28);
+  --l1:#e8925a; --l2:#d04f6a; --l3:#7a5bc7;
+  --display:"Kalam","Comic Sans MS",cursive; --body:"Outfit",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(ellipse at 50% 35%,var(--mesa2),var(--mesa) 70%);background-color:var(--mesa);color:var(--carta);font-family:var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px;box-sizing:border-box;min-height:100%}
+.wrap{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:22px;align-items:center}
+header{text-align:center}
+h1{font-family:var(--display);font-weight:400;font-size:2rem;margin:0;color:var(--ouro);letter-spacing:.01em}
+.sub{color:var(--suave);font-size:.9rem;margin-top:4px}
+.mesa{position:relative;width:100%;height:540px;perspective:1200px}
+.deck{position:absolute;width:104px;height:150px;cursor:pointer;border:0;background:none;padding:0;top:356px;transition:opacity .3s;color:inherit;font:inherit}
+#deck{left:calc(50% - 124px)}
+#lixo{left:calc(50% + 20px)}
+.deck .lbl{position:absolute;top:162px;left:-10px;right:-10px;text-align:center;font-size:.75rem;color:var(--suave);letter-spacing:.06em}
+#lixo .vaga{position:absolute;inset:0;border-radius:12px;border:2px dashed var(--linha)}
+#lixo .mini{position:absolute;inset:0;transition:transform .2s;border-radius:12px;background:var(--carta);color:var(--tinta);border:2px solid var(--cor,var(--l1));font-family:var(--display);font-size:.62rem;line-height:1.3;padding:12px 9px;text-align:center;display:grid;place-items:center;overflow:hidden;box-shadow:0 3px 8px rgba(0,0,0,.35)}
+#lixo:focus-visible{outline:2px solid var(--ouro);outline-offset:8px;border-radius:12px}
+.float{animation:flutua 4s ease-in-out infinite;width:100%;height:100%;position:relative;transform-style:preserve-3d}
+@keyframes flutua{0%,100%{transform:translateY(0) rotate(-.6deg)}50%{transform:translateY(-10px) rotate(.6deg)}}
+.seg{display:inline-flex;border:1px solid var(--linha);border-radius:999px;overflow:hidden}
+.seg button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--suave);padding:8px 14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ouro);color:var(--tinta);font-weight:600}
+.ver{position:fixed;inset:0;z-index:20;background:rgba(20,6,13,.88);backdrop-filter:blur(6px);display:flex;flex-direction:column;justify-content:center;gap:18px;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.ver .cab{display:flex;justify-content:space-between;align-items:center;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));color:var(--ouro);font-family:var(--display);font-size:1.2rem}
+.trilho{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:20px calc(50% - 120px);scrollbar-width:none}
+.trilho::-webkit-scrollbar{display:none}
+.trilho .face{position:relative;flex:0 0 240px;height:330px;scroll-snap-align:center;animation:flutua 4s ease-in-out infinite}
+.trilho .face:nth-child(even){animation-delay:-2s}
+.ver .rodape{text-align:center;color:var(--suave);font-size:.85rem;font-variant-numeric:tabular-nums}
+.deck .verso{position:absolute;inset:0;border-radius:14px;background:
+  repeating-linear-gradient(45deg,transparent 0 9px,rgba(224,180,92,.18) 9px 10px),
+  repeating-linear-gradient(-45deg,transparent 0 9px,rgba(224,180,92,.18) 9px 10px),#5a1d38;
+  border:2px solid var(--ouro);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.deck .verso:nth-child(1){transform:translate(6px,6px)}
+.deck .verso:nth-child(2){transform:translate(3px,3px)}
+.deck .verso:nth-child(3)::after{content:"♥";position:absolute;inset:0;display:grid;place-items:center;font-size:2.6rem;color:var(--ouro);font-family:var(--display)}
+.deck:hover .verso:nth-child(3){transform:translateY(-4px)}
+.deck:focus-visible{outline:2px solid var(--ouro);outline-offset:8px;border-radius:14px}
+.deck.vazio{opacity:.25;cursor:default}
+.dica{position:absolute;top:140px;width:100%;text-align:center;color:var(--suave);font-size:.95rem;font-family:var(--display)}
+.carta{position:absolute;width:240px;height:330px;left:calc(50% - 120px);top:6px;cursor:pointer;transform-style:preserve-3d}
+.costas{position:absolute;inset:0;border-radius:18px;transform:rotateY(180deg);backface-visibility:hidden;border:2px solid var(--ouro);background:repeating-linear-gradient(45deg,transparent 0 9px,rgba(224,180,92,.18) 9px 10px),repeating-linear-gradient(-45deg,transparent 0 9px,rgba(224,180,92,.18) 9px 10px),#5a1d38}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;background:var(--carta);color:var(--tinta);box-shadow:0 18px 40px rgba(0,0,0,.45);display:flex;flex-direction:column;overflow:hidden;border:3px solid var(--cor,var(--l1))}
+.face .topo{display:flex;justify-content:space-between;padding:14px 16px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--cor)}
+.face .q{flex:1;display:grid;place-items:center;padding:8px 26px;text-align:center;font-family:var(--display);font-size:1.6rem;line-height:1.3;text-wrap:balance}
+.face .pe{background:var(--cor);color:#fff;text-align:center;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;padding:9px;font-weight:600}
+.pontos{display:inline-flex;gap:4px}.pontos i{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.25}.pontos i.a{opacity:1}
+.acoes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+button.b{font:inherit;font-weight:500;border-radius:999px;padding:10px 18px;border:1px solid var(--linha);background:rgba(255,255,255,.05);color:var(--carta);cursor:pointer}
+button.b.pri{background:var(--ouro);color:var(--tinta);border-color:var(--ouro)}
+button.b:focus-visible,.chip:focus-visible{outline:2px solid var(--ouro);outline-offset:2px}
+.contador{font-variant-numeric:tabular-nums;color:var(--suave);font-size:.85rem}
+details{width:100%;border:1px solid var(--linha);border-radius:16px;background:rgba(0,0,0,.18)}
+summary{cursor:pointer;padding:14px 18px;font-weight:600;color:var(--ouro);list-style:none;display:flex;justify-content:space-between}
+summary::after{content:"＋"}details[open] summary::after{content:"－"}
+.filtros{padding:0 18px 18px;display:flex;flex-direction:column;gap:16px}
+.rot{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--suave);margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:.88rem;border-radius:999px;padding:7px 13px;border:1px solid var(--linha);background:transparent;color:var(--suave);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--c,var(--ouro));border-color:var(--c,var(--ouro));color:#fff}
+.chip.t[aria-pressed="true"]{color:var(--tinta)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header><h1>Cartas a Dois</h1><div class="sub">Puxe uma carta, leia em voz alta e responda com calma.</div></header>
+
+  <div class="mesa">
+    <button class="deck" id="deck" aria-label="Puxar uma carta"><span class="verso"></span><span class="verso"></span><span class="verso"></span><span class="lbl" id="lblDeck">Baralho</span></button>
+    <button class="deck" id="lixo" aria-label="Ver cartas que já foram"><span class="vaga"></span><span id="pilhaLixo"></span><span class="lbl" id="lblLixo">Já foram</span></button>
+    <div class="dica" id="dica">Toque no baralho para puxar uma carta</div>
+    <div class="carta" id="carta" hidden><div class="float"><div class="face" id="face">
+      <div class="topo"><span id="tema"></span><span class="pontos" id="pontos"><i></i><i></i><i></i></span></div>
+      <div class="q" id="q"></div>
+      <div class="pe" id="nivel"></div>
+    </div><div class="costas"></div></div></div>
+  </div>
+
+  <div class="acoes">
+    <button class="b pri" id="prox">Puxar carta</button>
+    <button class="b" id="emb">Embaralhar de novo</button>
+  </div>
+  <div class="seg" role="group" aria-label="Ordem das cartas">
+    <button id="oAle" aria-pressed="true">Aleatório</button>
+    <button id="oProf" aria-pressed="false">Do leve ao profundo</button>
+  </div>
+  <div class="contador" id="cont"></div>
+
+  <details id="det">
+    <summary>Escolher perguntas</summary>
+    <div class="filtros">
+      <div><div class="rot">Profundidade</div><div class="chips" id="niveis"></div></div>
+      <div><div class="rot">Temas</div><div class="chips" id="temas"></div></div>
+    </div>
+  </details>
+</div>
+
+<div class="ver" id="ver" hidden>
+  <div class="cab"><span>Cartas que já foram</span><button class="b" id="fechar">Fechar</button></div>
+  <div class="trilho" id="trilho"></div>
+  <div class="rodape">Deslize para o lado para passar as cartas</div>
+</div>
+
+<script>
+const NIV={1:["Leve","--l1"],2:["Intermediária","--l2"],3:["Profunda","--l3"]};
+const TEM={gostos:"Gostos",comida:"Comida",lugares:"Lugares e viagens",rotina:"Dia a dia",infancia:"Infância e memórias",eu:"Jeito de ser",valores:"Valores e sonhos",relacao:"Relacionamento",emocoes:"Emoções",feridas:"Dores e perdão",futuro:"Nós e o futuro",picante:"Picante 18+"};
+const P=[
+["Qual música melhora o seu humor?",1,"gostos"],
+["Se pudesse aprender uma nova habilidade instantaneamente, qual seria?",1,"gostos"],
+["Qual era o seu desenho animado favorito na infância?",1,"infancia"],
+["Qual é a sua estação preferida do ano e por quê?",1,"gostos"],
+["Qual é o seu feriado favorito?",1,"gostos"],
+["Se tivesse que escolher uma comida para comer pelo resto da vida, qual seria?",1,"comida"],
+["Qual é a sua cor favorita e o que ela representa pra você?",1,"gostos"],
+["Qual foi o último lugar que você visitou?",1,"lugares"],
+["Você é mais diurno ou noturno?",1,"rotina"],
+["Prefere ler livros físicos ou digitais?",1,"gostos"],
+["O que você mais gosta de fazer aos finais de semana?",1,"rotina"],
+["O que você prefere: praia ou montanha?",1,"lugares"],
+["Qual é o seu filme ou série favorito?",1,"gostos"],
+["Se pudesse ter qualquer animal de estimação, qual você teria?",1,"gostos"],
+["Se pudesse viajar pra qualquer lugar do mundo, pra onde você iria?",1,"lugares"],
+["Qual foi a última coisa que você aprendeu?",1,"rotina"],
+["Você prefere rotina ou espontaneidade?",1,"rotina"],
+["Você se considera uma pessoa introvertida ou extrovertida?",1,"eu"],
+["Como você descreveria um dia perfeito?",1,"rotina"],
+["O que você gostaria de ter mais tempo para fazer?",1,"rotina"],
+["O que é algo que você tem medo de perder?",2,"valores"],
+["Como você define o sucesso?",2,"valores"],
+["Qual é a qualidade que você mais admira nas outras pessoas?",2,"valores"],
+["Qual é a coisa mais importante que você aprendeu nos últimos 12 meses?",2,"eu"],
+["O que faz você se sentir mais vivo?",2,"emocoes"],
+["Qual é o hábito mais importante que você mantém?",2,"rotina"],
+["O que te conforta quando você está triste?",2,"emocoes"],
+["Qual é a sua maior fonte de motivação?",2,"valores"],
+["Você prefere resolver problemas sozinho ou com a ajuda de outras pessoas?",2,"eu"],
+["Qual foi o maior risco que você já correu?",2,"eu"],
+["O que você faria se não tivesse medo de falhar?",2,"valores"],
+["Quais são as 3 coisas que você mais valoriza na vida?",2,"valores"],
+["Qual foi a decisão mais difícil que você teve que tomar?",2,"eu"],
+["Você se sente confortável expressando as suas emoções?",2,"emocoes"],
+["Qual é a melhor lembrança que você tem da sua infância?",2,"infancia"],
+["Como você lida com situações de conflitos ou desacordo?",2,"relacao"],
+["O que te faz se sentir amado e apreciado?",2,"relacao"],
+["O que faz um lugar ser um \"lar\" para você?",2,"relacao"],
+["O que você mais valoriza em um relacionamento?",2,"relacao"],
+["Qual é o maior sonho que você ainda não realizou?",2,"valores"],
+["O que te faz se sentir verdadeiramente grato?",2,"emocoes"],
+["Como você acha que as pessoas que você conhece te descreveriam?",2,"eu"],
+["Qual foi o momento em que você se sentiu mais conectado a outra pessoa?",2,"relacao"],
+["O que você acredita ser o seu maior talento ou dom?",2,"eu"],
+["Você se sente confortável em aceitar ajuda quando você precisa?",2,"eu"],
+["Qual é a coisa mais corajosa que você já fez?",2,"eu"],
+["Quando foi a última vez que você se sentiu realmente vulnerável?",3,"emocoes"],
+["Quando foi a última vez que você teve o coração partido?",3,"feridas"],
+["Você já perdoou alguém, mesmo quando era difícil?",3,"feridas"],
+["O que você acredita ser o propósito da vida?",3,"valores"],
+["O que você acha que é mais difícil para as pessoas entenderem sobre você?",3,"eu"],
+["O que significa para você estar em paz consigo mesmo?",3,"emocoes"],
+["O que você gostaria que as pessoas entendessem sobre você, mas tem dificuldade de explicar?",3,"eu"],
+["O que você espera deixar como legado para o mundo?",3,"valores"],
+["Quais são os arrependimentos que você carrega?",3,"feridas"],
+["Se soubesse que iria morrer em um ano, o que mudaria em sua vida?",3,"valores"],
+["O que mais te assusta na ideia de amar alguém profundamente?",3,"relacao"],
+["Qual é o papel do perdão na sua vida?",3,"feridas"],
+["O que te faz sentir que está vivendo a sua vida de maneira autêntica?",3,"eu"],
+["O que você gostaria que fosse diferente no modo como expressa seus sentimentos?",3,"emocoes"],
+["O que significa para você ser vulnerável?",3,"emocoes"],
+["Qual é a memória mais dolorosa que você já teve que enfrentar?",3,"feridas"],
+["O que você sente que ainda precisa resolver na sua vida?",3,"feridas"],
+["O que você evita sentir, mesmo sabendo que isso te custa caro?",3,"emocoes"],
+["Qual verdade sobre você poucas pessoas conhecem?",3,"eu"],
+["O que hoje você aceita, mas no fundo sabe que merece mais?",3,"valores"],
+["Quando foi a última vez que você foi realmente honesto consigo mesmo?",3,"eu"],
+["Que parte da sua história ainda dói quando é lembrada?",3,"feridas"],
+["O que você tem medo de admitir em voz alta?",3,"emocoes"],
+["Que erro você repete mesmo sabendo como ele termina?",3,"eu"],
+["O que você já tolerou só para não ficar sozinho?",3,"relacao"],
+["Qual limite você precisa aprender a impor e manter?",3,"relacao"],
+["O que você faria se não tivesse medo de decepcionar ninguém?",3,"valores"],
+["Que sentimento você costuma engolir em vez de expressar?",3,"emocoes"],
+["O que te faz continuar preso a algo que já acabou?",3,"feridas"],
+["Que versão antiga de você está na hora de deixar no passado?",3,"eu"],
+["O que hoje você faria diferente se pudesse voltar no tempo?",3,"feridas"],
+["Em que você abre mão de si mesmo para ser aceito?",3,"eu"],
+["O que você espera que alguém faça por você, mas nunca pediu?",3,"relacao"],
+["Que parte sua você tenta esconder para parecer forte?",3,"eu"],
+["O que você está guardando e precisa ser dito?",3,"emocoes"],
+["O que você precisa perdoar para seguir em frente?",3,"feridas"],
+["Qual conversa você vem adiando por medo do resultado?",3,"relacao"],
+["O que você quer, mas sente vergonha de desejar?",3,"emocoes"],
+["Com quem ou onde você aprendeu a se colocar para baixo?",3,"feridas"],
+["O que você já aceitou no passado e hoje não aceita mais?",3,"valores"],
+["Que promessa você precisa fazer para si mesmo agora?",3,"valores"],
+["O que te impede de confiar novamente?",3,"feridas"],
+["Que emoção você sente e acha errado sentir?",3,"emocoes"],
+["Em que parte da sua vida você está precisando de descanso?",3,"emocoes"],
+["O que você precisa ouvir hoje, mesmo que doa?",3,"emocoes"],
+["Qual é o seu doce favorito?",1,"comida"],
+["Pizza ou hambúrguer numa sexta à noite?",1,"comida"],
+["Qual comida da sua infância você ainda sente falta?",1,"comida"],
+["Qual prato você gostaria que a gente aprendesse a cozinhar junto?",1,"comida"],
+["Café ou chá para começar o dia?",1,"rotina"],
+["Qual é o barulho que mais te irrita?",1,"gostos"],
+["Qual app você mais usa no celular?",1,"rotina"],
+["Qual é a sua mania mais estranha?",1,"eu"],
+["Qual lugar da cidade você mais gosta de ir comigo?",1,"lugares"],
+["Qual viagem curta a gente podia fazer no próximo feriado?",1,"lugares"],
+["Se a gente ganhasse um fim de semana livre amanhã, o que faríamos?",1,"lugares"],
+["Qual era a sua brincadeira favorita quando criança?",1,"infancia"],
+["O que você queria ser quando crescesse?",1,"infancia"],
+["Qual música te lembra a gente?",1,"relacao"],
+["Qual foi a primeira coisa que você reparou em mim?",1,"relacao"],
+["Qual foi o nosso encontro mais divertido?",1,"relacao"],
+["Qual superpoder você escolheria?",1,"gostos"],
+["Qual tarefa de casa você mais odeia fazer?",1,"rotina"],
+["Qual hábito meu você acha mais fofo?",2,"relacao"],
+["Em que momento você soube que gostava de mim?",2,"relacao"],
+["O que eu faço que te faz sentir cuidado?",2,"relacao"],
+["Qual pequena coisa do dia a dia eu poderia fazer mais por você?",2,"relacao"],
+["Como você imagina a nossa casa daqui a 10 anos?",2,"futuro"],
+["Qual tradição você gostaria que a gente criasse?",2,"futuro"],
+["Que viagem dos sonhos você quer fazer comigo?",2,"futuro"],
+["Qual meta a gente devia ter para o próximo ano?",2,"futuro"],
+["Como você gostaria que a gente comemorasse as nossas datas?",2,"futuro"],
+["Qual lembrança de família te deixa feliz?",2,"infancia"],
+["Qual elogio você recebeu que nunca esqueceu?",2,"emocoes"],
+["O que te deixa ansioso ultimamente?",2,"emocoes"],
+["Do que você tem mais orgulho em você?",2,"eu"],
+["O que você acha que a gente faz melhor como casal?",2,"relacao"],
+["Em que a gente precisa melhorar como casal?",3,"relacao"],
+["Que medo você tem sobre o nosso futuro?",3,"futuro"],
+["O que você nunca me contou por receio da minha reação?",3,"relacao"],
+["Qual briga nossa te ensinou alguma coisa?",3,"relacao"],
+["Como você quer ser lembrado por mim quando estivermos velhinhos?",3,"futuro"],
+["Qual parte do seu passado você gostaria que eu entendesse melhor?",3,"feridas"],
+["Qual foi o nosso beijo mais marcante?",1,"picante"],
+["Que parte do meu corpo você mais gosta?",1,"picante"],
+["Que roupa minha você acha mais sexy?",1,"picante"],
+["Em que parte do corpo você mais gosta de receber um beijo?",1,"picante"],
+["Manhã, tarde ou noite: qual o seu horário preferido para namorar?",1,"picante"],
+["O que eu faço que te deixa com vontade na mesma hora?",2,"picante"],
+["Qual foi a nossa noite mais inesquecível?",2,"picante"],
+["Qual é o seu cheiro ou toque favorito em mim?",2,"picante"],
+["Você prefere carinho lento ou mais intensidade?",2,"picante"],
+["Em que lugar diferente você toparia um momento a dois comigo?",2,"picante"],
+["O que você gostaria que eu fizesse mais vezes na cama?",2,"picante"],
+["Qual foi o momento em que você mais me desejou?",2,"picante"],
+["Você gosta quando eu te provoco com mensagens durante o dia?",2,"picante"],
+["Qual fantasia você ainda não teve coragem de me contar?",3,"picante"],
+["O que te faz se sentir mais desejado por mim?",3,"picante"],
+["Existe algo que você gostaria de experimentar e nunca pediu?",3,"picante"],
+["O que te deixa inseguro na nossa intimidade?",3,"picante"],
+["Qual limite seu na intimidade você quer que eu sempre respeite?",3,"picante"],
+["Qual foi a melhor refeição que você já comeu?",1,"comida"],
+["Qual cheiro te traz uma lembrança boa?",1,"infancia"],
+["Qual programa simples a dois te deixa mais feliz?",1,"relacao"],
+["Se a gente tivesse um dia inteiro sem celular, o que faríamos?",1,"rotina"],
+["Qual cidade você gostaria de morar um dia?",1,"lugares"],
+["Qual conquista nossa te deixa mais orgulhoso?",2,"relacao"],
+["O que você gostaria de aprender comigo?",2,"futuro"],
+["Qual foi a fase mais difícil que a gente superou junto?",3,"relacao"],
+["O que você precisa de mim quando está num dia ruim?",3,"emocoes"],
+["Qual pergunta você queria que eu te fizesse, mas eu nunca fiz?",3,"relacao"],
+["O que te deixa mais confiante para se soltar comigo?",2,"picante"],
+["Qual é a sua sobremesa preferida para dividir comigo?",1,"comida"],
+["Descreva sem pressa como seria a nossa noite perfeita.",3,"picante"]
+];
+const load=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v||d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let selN=new Set(load("n",[1,2,3])), selT=new Set(load("t2",Object.keys(TEM)));
+let pilha=[], tiradas=0, total=0;
+const $=id=>document.getElementById(id);
+
+function chip(box,label,on,cls,cor,fn){const b=document.createElement("button");b.className="chip "+cls;b.textContent=label;b.setAttribute("aria-pressed",on);if(cor)b.style.setProperty("--c",`var(${cor})`);b.onclick=()=>{fn(b)};box.appendChild(b)}
+Object.entries(NIV).forEach(([n,[l,c]])=>chip($("niveis"),l,selN.has(+n),"n",c,b=>{
+  if(selN.has(+n)){if(selN.size===1)return;selN.delete(+n)}else selN.add(+n);
+  b.setAttribute("aria-pressed",selN.has(+n));save("n",[...selN]);embaralhar()}));
+Object.entries(TEM).forEach(([k,l])=>chip($("temas"),l,selT.has(k),"t",null,b=>{
+  if(selT.has(k)){if(selT.size===1)return;selT.delete(k)}else selT.add(k);
+  b.setAttribute("aria-pressed",selT.has(k));save("t2",[...selT]);embaralhar()}));
+
+let ordem=load("o","ale"), atual=null, foram=[], ocupado=false;
+const calmo=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function embaralhar(){
+  pilha=P.filter(p=>selN.has(p[1])&&selT.has(p[2]));
+  for(let i=pilha.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[pilha[i],pilha[j]]=[pilha[j],pilha[i]]}
+  if(ordem==="prof")pilha.sort((a,b)=>b[1]-a[1]); // pop() tira do fim: leves primeiro
+  total=pilha.length;tiradas=0;atual=null;foram=[];$("carta").hidden=true;$("pilhaLixo").innerHTML="";atualiza();
+}
+function atualiza(){
+  save("jogo",{pilha,foram,atual,tiradas,total});
+  $("cont").textContent=total?`${tiradas} de ${total} cartas puxadas`:"Nenhuma pergunta com esses filtros";
+  $("deck").classList.toggle("vazio",!pilha.length);
+  $("lblDeck").textContent=`Baralho · ${pilha.length}`;
+  $("lblLixo").textContent=`Já foram · ${foram.length}`;
+  $("dica").textContent=pilha.length?"Toque no baralho para puxar uma carta":"Fim do baralho. Embaralhe de novo.";
+  $("dica").hidden=!!atual;
+  $("prox").textContent=atual?"Guardar carta":"Puxar carta";
+  $("prox").disabled=!atual&&!pilha.length;
+}
+function aoAcaso(){return {r:(Math.random()*14-7).toFixed(1),x:(Math.random()*10-5)|0,y:(Math.random()*8-4)|0}}
+function poeNoMonte(c,p){
+  const m=document.createElement("span");m.className="mini";m.textContent=c[0];
+  m.style.setProperty("--cor",`var(${NIV[c[1]][1]})`);
+  m.style.transform=`translate(${p.x}px,${p.y}px) rotate(${p.r}deg)`;
+  const box=$("pilhaLixo");box.appendChild(m);
+  while(box.children.length>7)box.firstChild.remove();
+}
+function delta(alvo,p){p=p||{x:0,y:0};
+  const c=$("carta").getBoundingClientRect(),a=alvo.getBoundingClientRect();
+  return `translate(${a.left+a.width/2-c.left-c.width/2+p.x}px,${a.top+a.height/2-c.top-c.height/2+p.y}px) scale(${a.width/c.width})`;
+}
+function puxar(){
+  if(ocupado||!pilha.length)return;
+  atual=pilha.pop();tiradas++;
+  const [t,n,k]=atual,c=$("carta");
+  $("face").style.setProperty("--cor",`var(${NIV[n][1]})`);
+  $("q").textContent=t;$("tema").textContent=TEM[k];$("nivel").textContent=NIV[n][0];
+  [...$("pontos").children].forEach((i,x)=>i.classList.toggle("a",x<n));
+  c.hidden=false;atualiza();
+  if(calmo)return;
+  ocupado=true;
+  c.animate([{transform:delta($("deck"))+" rotateY(180deg)"},{transform:"none"}],{duration:750,easing:"cubic-bezier(.2,.8,.2,1)"}).onfinish=()=>ocupado=false;
+}
+function guardar(){
+  if(ocupado||!atual)return;
+  const c=$("carta"),p=aoAcaso(),fim=()=>{c.hidden=true;poeNoMonte(atual,p);foram.push(atual);atual=null;ocupado=false;atualiza()};
+  if(calmo)return fim();
+  ocupado=true;
+  c.animate([{transform:"none"},{transform:delta($("lixo"),p)+` rotate(${p.r}deg)`}],{duration:550,easing:"cubic-bezier(.5,0,.3,1)",fill:"forwards"}).onfinish=a=>{fim();c.getAnimations().forEach(x=>x.cancel())};
+}
+function clique(){atual?guardar():puxar()}
+function verForam(){
+  if(!foram.length&&!atual)return;
+  const lista=atual?[...foram,atual]:foram,tr=$("trilho");tr.innerHTML="";
+  lista.forEach(([t,n,k])=>{
+    const f=document.createElement("div");f.className="face";f.style.setProperty("--cor",`var(${NIV[n][1]})`);
+    f.innerHTML=`<div class="topo"><span></span><span class="pontos">${[1,2,3].map(x=>`<i class="${x<=n?"a":""}"></i>`).join("")}</span></div><div class="q"></div><div class="pe"></div>`;
+    f.querySelector(".topo span").textContent=TEM[k];f.querySelector(".q").textContent=t;f.querySelector(".pe").textContent=NIV[n][0];
+    tr.appendChild(f);
+  });
+  $("ver").hidden=false;tr.scrollLeft=0;$("fechar").focus();
+}
+function setOrdem(o){ordem=o;save("o",o);$("oAle").setAttribute("aria-pressed",o==="ale");$("oProf").setAttribute("aria-pressed",o==="prof");embaralhar()}
+$("deck").onclick=()=>{if(!atual)puxar()};
+$("carta").onclick=clique;$("prox").onclick=clique;$("emb").onclick=embaralhar;
+$("lixo").onclick=verForam;$("fechar").onclick=()=>$("ver").hidden=true;
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("ver").hidden=true});
+$("oAle").onclick=()=>setOrdem("ale");$("oProf").onclick=()=>setOrdem("prof");
+(function(){
+  $("oAle").setAttribute("aria-pressed",ordem==="ale");$("oProf").setAttribute("aria-pressed",ordem==="prof");
+  const j=load("jogo",null);
+  if(!j||!Array.isArray(j.pilha)){embaralhar();return}
+  pilha=j.pilha;foram=j.foram||[];tiradas=j.tiradas||0;total=j.total||0;atual=null;
+  foram.slice(-7).forEach(c=>poeNoMonte(c,aoAcaso()));
+  if(j.atual){pilha.push(j.atual);tiradas--;atualiza();puxar()}else atualiza();
+})();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+</script>
